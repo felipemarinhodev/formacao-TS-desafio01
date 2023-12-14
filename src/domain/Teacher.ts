@@ -46,10 +46,10 @@ export class Teacher implements Serializable {
     const parsed = TeacherCreationSchema.parse(data);
     return new Teacher(parsed);
   }
-  toJSON(): string {
+  toJSON() {
     return JSON.stringify(this.toObject())
   }
-  toObject(): Record<string, unknown> {
+  toObject() {
     return {
       firstName:  this.firstName,
       surname: this.surname,
