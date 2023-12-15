@@ -26,10 +26,10 @@ export class Class implements Serializable {
     return new Class(parsed);
   }
 
-  toJSON(): string {
+  toJSON() {
     return JSON.stringify(this.toObject(), null, 2);
   }
-  toObject(): Record<string, unknown> {
+  toObject() {
     return {
       id: this.id,
       code: this.code,
