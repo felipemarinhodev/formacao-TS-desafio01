@@ -1,7 +1,7 @@
 import { Teacher } from "../domain/Teacher.js";
 import { Database } from "./Db.js";
 
-export class TeacherREpository extends Database {
+export class TeacherRepository extends Database {
   constructor() {
     super(Teacher);
   }
