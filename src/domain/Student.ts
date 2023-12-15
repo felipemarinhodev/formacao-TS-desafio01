@@ -62,7 +62,7 @@ export class Student implements Serializable {
     return new Student(parsed);
   }
 
-  toObject(): Record<string, unknown> {
+  toObject() {
     return {
       id: this.id,
       firstName: this.firstName,
