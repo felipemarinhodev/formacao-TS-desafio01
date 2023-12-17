@@ -22,13 +22,8 @@ export class ClassService extends Service {
 
   update(id: string, newData: ClassUpdateType) {
     const entity = this.findById(id) as Class;
-    if (newData.teacher) {
-      try {
-        this.teacherService.findById(newData.teacher);
-      } catch (error) {
-        throw new NotFoundError(newData.teacher, Teacher);
-      }
-    }
+
+    this.#validateTeacher(newData.teacher);
 
     const updated = new Class({
       ...entity.toObject(),
@@ -44,13 +39,7 @@ export class ClassService extends Service {
     );
     if (existing.length > 0) throw new ConflictError(creationData.code, Class)
 
-    if (creationData.teacher) {
-      try {
-        this.teacherService.findById(creationData.teacher);
-      } catch (error) {
-        throw new NotFoundError(creationData.teacher, Teacher);
-      }
-    }
+    this.#validateTeacher(creationData.teacher);
 
     const entity = new Class(creationData);
     this.repository.save(entity);
@@ -78,5 +67,16 @@ export class ClassService extends Service {
   getStudents (classId: string) {
     const classEntity = this.findById(classId) as Class;
     return this.studentService.listBy('class', classEntity.id) as Student[];
+  }
+
+  #validateTeacher (teacherId: string | null | undefined) {
+    if (teacherId) {
+      try {
+        this.teacherService.findById(teacherId);
+      } catch (error) {
+        throw new NotFoundError(teacherId, Teacher);
+      }
+    }
+
   }
 }
