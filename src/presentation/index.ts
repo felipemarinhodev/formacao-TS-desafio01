@@ -1,7 +1,9 @@
 import Express, { type NextFunction, type Response, type Request } from 'express';
 import helmet from 'helmet';
 import type { Server } from 'http';
-export async function WebLayer (config: any, services: any) {
+import { ServiceList } from '../app.js';
+import { AppConfig } from '../config.js';
+export async function WebLayer (config: AppConfig, services: ServiceList) {
   const app = Express();
   let server: Server | undefined;
   app.use(helmet());
