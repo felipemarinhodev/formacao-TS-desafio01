@@ -36,7 +36,7 @@ export function parentRouterFactory(parentService: ParentService, studentService
   
   router.post(
     '/',
-    zodValidation(ParentCreationSchema),
+    zodValidation(ParentCreationSchema.omit({ id: true })),
     async (
       req, 
       res, 

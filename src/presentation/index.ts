@@ -4,6 +4,7 @@ import type { Server } from 'http';
 import { ServiceList } from '../app.js';
 import { AppConfig } from '../config.js';
 import { parentRouterFactory } from './parent.js';
+import { studentRouterFactory } from './student.js';
 export async function WebLayer (config: AppConfig, services: ServiceList) {
   const app = Express();
   let server: Server | undefined;
@@ -12,7 +13,7 @@ export async function WebLayer (config: AppConfig, services: ServiceList) {
   // app.use('/classes', classRouterFactory());
   // app.use('/teachers', teacherRouterFactory());
   app.use('/parents', parentRouterFactory(services.parent, services.student));
-  // app.use('/students', studentRouterFactory());
+  app.use('/students', studentRouterFactory(services.student));
   app.get('/ping', (_, res) => res.send('pong').end());
 
   app.use(async(err: any, _: Request, res: Response, next: NextFunction) => {
