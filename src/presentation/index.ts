@@ -5,12 +5,13 @@ import { ServiceList } from '../app.js';
 import { AppConfig } from '../config.js';
 import { parentRouterFactory } from './parent.js';
 import { studentRouterFactory } from './student.js';
+import { classRouterFactory } from './class.js';
 export async function WebLayer (config: AppConfig, services: ServiceList) {
   const app = Express();
   let server: Server | undefined;
   app.use(helmet());
   app.use(Express.json());
-  // app.use('/classes', classRouterFactory());
+  app.use('/classes', classRouterFactory(services.class, services.student));
   // app.use('/teachers', teacherRouterFactory());
   app.use('/parents', parentRouterFactory(services.parent, services.student));
   app.use('/students', studentRouterFactory(services.student));
