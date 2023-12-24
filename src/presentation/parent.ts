@@ -100,9 +100,13 @@ export function parentRouterFactory(parentService: ParentService, studentService
         res, 
         next
       ) => {
-        const {id} = req.params; 
-        const students = studentService.listBy('parents', [id]);
-        return res.json(students.map((student) => student.toObject()))
+        try {
+          const {id} = req.params; 
+          const students = studentService.listBy('parents', [id]);
+          return res.json(students.map((student) => student.toObject()))
+        } catch (error) {
+          next(error);
+        }
     }
   );
 

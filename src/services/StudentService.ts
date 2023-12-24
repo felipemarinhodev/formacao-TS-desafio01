@@ -8,7 +8,10 @@ import { Service } from "./BaseService.js";
 import { ParentService } from "./ParentService.js";
 
 export class StudentService extends Service {
-  constructor(repository: StudentRepository, private readonly parentService: ParentService) {
+  constructor(
+    repository: StudentRepository,
+    private readonly parentService: ParentService
+  ) {
     super(repository);
   }
 
