@@ -1,8 +1,8 @@
-import { NextFunction, Router } from "express";
+import { NextFunction, type Request, Router } from "express";
 import { ParentService } from "../services/ParentService.js";
 import { StudentService } from "../services/StudentService.js";
 import zodValidation from "./middlewares/zodValidation.js";
-import { ParentCreationSchema, ParentUpdateSchema } from "../domain/Parent.js";
+import { ParentCreationSchema, ParentCreationType, ParentUpdateSchema } from "../domain/Parent.js";
 
 export function parentRouterFactory(parentService: ParentService, studentService: StudentService) {
   const router = Router();
@@ -38,7 +38,7 @@ export function parentRouterFactory(parentService: ParentService, studentService
     '/',
     zodValidation(ParentCreationSchema.omit({ id: true })),
     async (
-      req, 
+      req: Request<never, any, Omit<ParentCreationType, 'id'>>, 
       res, 
       next
     ) => {

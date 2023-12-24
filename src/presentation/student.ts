@@ -1,4 +1,4 @@
-import { Request, Router } from "express";
+import { type Request, Router } from "express";
 import { StudentCreationSchema, StudentCreationType, StudentUpdateSchema } from "../domain/Student.js";
 import { StudentService } from "../services/StudentService.js";
 import zodValidation from "./middlewares/zodValidation.js";
@@ -98,7 +98,7 @@ export const studentRouterFactory = (
     '/',
     zodValidation(StudentCreationSchema.omit({ id: true })),
     async (
-      req,
+      req: Request<never, any, Omit<StudentCreationType, 'id'>>,
       res,
       next
     ) => {

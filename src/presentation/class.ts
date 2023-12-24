@@ -1,12 +1,10 @@
-import { Router } from "express";
+import { type Request, Router } from "express";
+import { ClassCreationSchema, ClassCreationType, ClassUpdateSchema } from "../domain/Class.js";
 import { ClassService } from "../services/ClassService.js";
 import zodValidation from "./middlewares/zodValidation.js";
-import { ClassCreationSchema, ClassUpdateSchema } from "../domain/Class.js";
-import { StudentService } from "../services/StudentService.js";
 
 export function classRouterFactory(
     classService: ClassService,
-    studentService: StudentService,
   )  {
   const router = Router();
 
@@ -19,12 +17,6 @@ export function classRouterFactory(
     ) => {
       try {
         const { id } = req.params;
-        const students = studentService.listBy('class', [id]);
-        if (students.length > 0) {
-          return res.status(403).json({
-            message: `Cannot delete class with id ${id} because it has students assigned`
-          });
-        }
         classService.remove(id);
         return res.status(204).send();
       } catch (error) {
@@ -69,11 +61,32 @@ export function classRouterFactory(
       res,
       next
     ) => {
-      const { id } = req.params;
-      const students = studentService.listBy('class', [id]);
-      return res.json(students.map(
-        student => student.toObject()
-      ))
+      try {
+        const {id} = req.params;
+        const students = classService.getStudents(id);
+
+        return res.json(students.map(student => student.toObject()));
+      } catch (error) {
+        next(error);
+      }
+    }
+  );
+
+  router.get(
+    '/:id/teacher',
+    async (
+      req,
+      res,
+      next
+    ) => {
+      try {
+        const {id} = req.params;
+        const teacher = classService.getTeacher(id);
+
+        return res.json(teacher.toObject());
+      } catch (error) {
+        next(error);
+      }
     }
   );
 
@@ -81,7 +94,7 @@ export function classRouterFactory(
     '/',
     zodValidation(ClassCreationSchema),
     async (
-      req,
+      req: Request<never, any, Omit<ClassCreationType, 'id'>>,
       res,
       next
     ) => {

@@ -11,7 +11,7 @@ export async function WebLayer (config: AppConfig, services: ServiceList) {
   let server: Server | undefined;
   app.use(helmet());
   app.use(Express.json());
-  app.use('/classes', classRouterFactory(services.class, services.student));
+  app.use('/classes', classRouterFactory(services.class));
   // app.use('/teachers', teacherRouterFactory());
   app.use('/parents', parentRouterFactory(services.parent, services.student));
   app.use('/students', studentRouterFactory(services.student));
