@@ -6,14 +6,13 @@ import { ConflictError } from "../domain/errors/ConflictError.js";
 import { DependencyConflictError } from "../domain/errors/DependencyConflict.js";
 import { MissingDependencyError } from "../domain/errors/MissingDependencyError.js";
 import { NotFoundError } from "../domain/errors/NotFoundError.js";
-import { Serializable } from "../domain/types.js";
 import { Service } from "./BaseService.js";
 import { StudentService } from "./StudentService.js";
 import { TeacherService } from "./TeacherService.js";
 
-export class ClassService extends Service {
+export class ClassService extends Service<typeof Class> {
   constructor(
-    repository: Database,
+    repository: Database<typeof Class>,
     private readonly teacherService: TeacherService,
     private readonly studentService: StudentService,
   ) {
@@ -21,7 +20,7 @@ export class ClassService extends Service {
   }
 
   update(id: string, newData: ClassUpdateType) {
-    const entity = this.findById(id) as Class;
+    const entity = this.findById(id);
 
     this.#validateTeacher(newData.teacher);
 
@@ -32,7 +31,7 @@ export class ClassService extends Service {
     this.repository.save(updated);
     return updated;
   }
-  create(creationData: ClassCreationType): Serializable {
+  create(creationData: ClassCreationType) {
     const existing = this.repository.listBy(
       'code',
       creationData.code

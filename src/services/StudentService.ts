@@ -1,22 +1,21 @@
-import { StudentRepository } from "../data/StudentRepository.js";
+import { Database } from "../data/Db.js";
 import { Parent } from "../domain/Parent.js";
 import { Student, StudentCreationType, StudentUpdateType } from "../domain/Student.js";
 import { ConflictError } from "../domain/errors/ConflictError.js";
 import { EmptyDependencyError } from "../domain/errors/EmptyDependency.js";
-import { Serializable } from "../domain/types.js";
 import { Service } from "./BaseService.js";
 import { ParentService } from "./ParentService.js";
 
-export class StudentService extends Service {
+export class StudentService extends Service<typeof Student> {
   constructor(
-    repository: StudentRepository,
+    repository: Database<typeof Student>,
     private readonly parentService: ParentService
   ) {
     super(repository);
   }
 
-  update(id: string, newData: StudentUpdateType): Serializable {
-    const existing = this.findById(id) as Student;
+  update(id: string, newData: StudentUpdateType) {
+    const existing = this.findById(id);
     const updated = new Student({
       ...existing.toObject(),
       ...newData
@@ -24,7 +23,7 @@ export class StudentService extends Service {
     this.repository.save(updated);
     return updated;
   }
-  create(creationData: StudentCreationType): Serializable {
+  create(creationData: StudentCreationType) {
     const existing = this.repository.listBy(
       'document',
       creationData.document
@@ -41,14 +40,14 @@ export class StudentService extends Service {
   }
 
   getParents (studentId: string) {
-    const student = this.findById(studentId) as Student;
+    const student = this.findById(studentId);
     const parents = student.parents.map(parent =>(
-      this.parentService.findById(parent))) as Parent[]
+      this.parentService.findById(parent)));
     return parents;
   }
 
   linkParent (studentId: string, parentToUpdate: StudentCreationType['parents']) {
-    const student = this.findById(studentId) as Student;
+    const student = this.findById(studentId);
     parentToUpdate.forEach(parent => {
       this.parentService.findById(parent)
     });

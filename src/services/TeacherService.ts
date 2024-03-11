@@ -1,11 +1,10 @@
 import { Teacher, TeacherCreationType, TeacherUpdateType } from "../domain/Teacher.js";
 import { ConflictError } from "../domain/errors/ConflictError.js";
-import { Serializable } from "../domain/types.js";
 import { Service } from "./BaseService.js";
 
-export class TeacherService extends Service {
-  update(id: string, newData: TeacherUpdateType): Serializable {
-    const existing = this.findById(id) as Teacher;
+export class TeacherService extends Service<typeof Teacher> {
+  update(id: string, newData: TeacherUpdateType) {
+    const existing = this.findById(id);
     const updated = new Teacher({
       ...existing.toObject(),
       ...newData
@@ -13,7 +12,7 @@ export class TeacherService extends Service {
     this.repository.save(updated);
     return updated;
   }
-  create(creationData: TeacherCreationType): Serializable {
+  create(creationData: TeacherCreationType) {
     const existing = this.repository.listBy(
       'document',
       creationData.document

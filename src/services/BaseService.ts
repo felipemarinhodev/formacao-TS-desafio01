@@ -1,10 +1,10 @@
 import { Database } from "../data/Db.js";
 import { NotFoundError } from "../domain/errors/NotFoundError.js";
-import { Serializable } from "../domain/types.js";
+import { Serializable, SerializableStatic } from "../domain/types.js";
 
-export abstract class Service {
+export abstract class Service<Static extends SerializableStatic, Instance extends Serializable = InstanceType<Static>> {
 
-  constructor(protected readonly repository: Database) {}
+  constructor(protected readonly repository: Database<Static>) {}
 
   list () {
     return this.repository.list();
@@ -14,7 +14,7 @@ export abstract class Service {
     this.repository.remove(id);
   }
 
-  listBy (property: string, value: any) {
+  listBy<Property extends keyof Instance> (property: Property, value: Instance[Property]) {
     return this.repository.listBy(property, value);
   }
 
@@ -24,7 +24,7 @@ export abstract class Service {
     return entity;
   }
 
-  abstract update (id: string, newData: unknown): Serializable;
+  abstract update (id: string, newData: unknown): Instance;
 
-  abstract create (creationData: unknown): Serializable;
+  abstract create (creationData: unknown): Instance;
 }
