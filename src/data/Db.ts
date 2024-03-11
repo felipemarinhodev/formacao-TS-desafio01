@@ -3,11 +3,11 @@ import { Serializable, SerializableStatic } from "../domain/types.js";
 import { fileURLToPath } from "node:url";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 
-export abstract class Database {
+export abstract class Database<Static extends SerializableStatic, Instance extends Serializable = InstanceType<Static>> {
   protected readonly dbPath: string;
-  protected dbData: Map<string, Serializable> = new Map();
-  readonly dbEntity: SerializableStatic;
-  constructor(entity: SerializableStatic) {
+  protected dbData: Map<string, Instance> = new Map();
+  readonly dbEntity: Static;
+  constructor(entity: Static) {
     this.dbEntity = entity;
     const filePath = fileURLToPath(import.meta.url);
     this.dbPath = resolve(dirname(filePath), `.data/${entity.name.toLowerCase()}.json`);
@@ -35,7 +35,7 @@ export abstract class Database {
     return this;
   }
 
-  list(): Serializable[] {
+  list() {
     return [...this.dbData.values()];
   }
 
@@ -44,20 +44,23 @@ export abstract class Database {
     return this.#updateFile();
   }
   
-  save(entity: Serializable) {
+  save(entity: Instance) {
     this.dbData.set(entity.id, entity);
     return this.#updateFile();
   }
 
-  listBy (property: string, value: any) {
+  listBy<Property extends keyof Instance> (property: Property, value: Instance[Property]) {
     const allData = this.list();
-    return allData.filter(data => {
-      let comparable = (data as any)[property] as unknown;
+    return allData.filter((data) => {
+      let comparable = data[property] as unknown;
       let comparison = value as unknown;
-
+      // se a propriedade for um objeto, um array ou uma data
+      // não temos como comparar usando ===
+      // portanto camos converter tudo que cair nesses casos para string
       if (typeof comparable === 'object') {
         [comparable, comparison] = [JSON.stringify(comparable), JSON.stringify(comparison)];
       }
+      // Ai podemos comparar os dois dados
       return comparable === comparison;
     })
   }
